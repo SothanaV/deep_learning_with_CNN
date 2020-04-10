@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Streaming Video Recorder and object detection</title>
+  <style>
+    * {
+        margin: 0;
+        padding: 0;
+    }
+    .imgbox {
+        display: grid;
+        height: 100%;
+        width: auto;
+    }
+    .center-fit {
+        max-width: 100%;
+        max-height: 100vh;
+        margin: auto;
+    }
+</style>
+</head>
+<body>
+  <div class="imgbox">
+    <img src="" id="render-image" alt="" class="center-fit" >
+  </div>
+  
+</body>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    let socket = io();
+    socket.on('connect', function() {
+        socket.emit('my event', {data: 'I\'m connected!'});
+        socket.on('broadcast-image', data => {
+          const { image } = data;
+
+          let bytes = new Uint8Array(image);
+          bytes = Array.from(bytes);
+          bytes = bytes.map(byte => String.fromCharCode(byte));
+          bytes = bytes.join('');
+
+          let imageElement = document.querySelector('#render-image');
+          imageElement.src = `data:image/png;base64,${bytes}`;
+        })
+    });
+</script>

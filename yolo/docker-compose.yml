@@ -1,0 +1,24 @@
+version: '2.3'
+networks:
+    socket:
+        external : true
+services:
+    socket:
+        build: ./socket
+        command: sh runserver_socket.sh
+        volumes:
+            - ./socket:/socket
+        ports: 
+            - 5000:5000
+        networks:
+            - socket
+    yolo:
+        build: ./yolo
+        runtime: nvidia
+        command: python3 video_detection.py
+        devices:
+            - /dev/video0:/dev/video0
+        networks:
+            - socket
+        depends_on: 
+            - socket
